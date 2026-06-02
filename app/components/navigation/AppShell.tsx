@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCustomeSession } from "@/store";
@@ -51,12 +52,18 @@ export default function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { session, status, clearSession } = useCustomeSession();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const hideNav = hiddenNavPaths.some(
     (path) => pathname === path || pathname.startsWith(`${path}/`),
   );
   const links = navLinks(session?.user.role);
 
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   async function handleSignOut() {
+    setMobileMenuOpen(false);
     await clearSession();
     router.push("/");
     router.refresh();
@@ -97,7 +104,7 @@ export default function AppShell({ children }: AppShellProps) {
 
             <div className="ml-auto flex items-center gap-2">
               {status === "loading" ? (
-                <span className="h-9 w-24 animate-pulse rounded-lg bg-white/5" />
+                <span className="h-9 w-16 animate-pulse rounded-lg bg-white/5 sm:w-24" />
               ) : session ? (
                 <>
                   <NotificationBell />
@@ -106,7 +113,7 @@ export default function AppShell({ children }: AppShellProps) {
                   </span>
                   <button
                     onClick={() => router.push(dashboardPath(session.user.role))}
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition-all hover:brightness-110 active:scale-95"
+                    className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition-all hover:brightness-110 active:scale-95 sm:inline-flex"
                   >
                     Dashboard
                   </button>
@@ -121,20 +128,93 @@ export default function AppShell({ children }: AppShellProps) {
                 <>
                   <button
                     onClick={() => router.push("/login")}
-                    className="rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface"
+                    className="hidden rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface sm:inline-flex"
                   >
                     Login
                   </button>
                   <button
                     onClick={() => router.push("/register")}
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition-all hover:brightness-110 active:scale-95"
+                    className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition-all hover:brightness-110 active:scale-95 sm:inline-flex"
                   >
                     Create Account
                   </button>
                 </>
               )}
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen((value) => !value)}
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface md:hidden"
+                aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={mobileMenuOpen}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                  {mobileMenuOpen ? "close" : "menu"}
+                </span>
+              </button>
             </div>
           </div>
+          {mobileMenuOpen && (
+            <div className="border-t border-white/10 bg-surface/95 px-4 py-3 shadow-xl md:hidden">
+              <div className="flex flex-col gap-1">
+                {links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                      pathname === link.href
+                        ? "bg-primary/10 text-primary"
+                        : "text-on-surface-variant hover:bg-white/5 hover:text-on-surface"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-3 border-t border-white/10 pt-3">
+                {session ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        router.push(dashboardPath(session.user.role));
+                      }}
+                      className="rounded-lg bg-primary px-3 py-2.5 text-sm font-semibold text-on-primary transition-all hover:brightness-110 active:scale-95"
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      onClick={handleSignOut}
+                      className="rounded-lg border border-white/10 px-3 py-2.5 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        router.push("/login");
+                      }}
+                      className="rounded-lg border border-white/10 px-3 py-2.5 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        router.push("/register");
+                      }}
+                      className="rounded-lg bg-primary px-3 py-2.5 text-sm font-semibold text-on-primary transition-all hover:brightness-110 active:scale-95"
+                    >
+                      Register
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </nav>
       )}
       <div className={hideNav ? "" : "pt-16"}>{children}</div>

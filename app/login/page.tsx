@@ -15,6 +15,7 @@ const inputStyle = (focused: boolean): React.CSSProperties => ({
 });
 
 type ErrorState = "credentials" | "rateLimit" | "notConfirmed" | null;
+type ResendState = "idle" | "loading" | "success" | "error";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -24,11 +25,14 @@ export default function Login() {
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [errorState, setErrorState] = useState<ErrorState>(null);
   const [loading, setLoading] = useState(false);
+  const [resendState, setResendState] = useState<ResendState>("idle");
 
   const rightRef = useRef<HTMLElement>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
 
   const loginUrl = process.env.NEXT_PUBLIC_LOGIN as string;
+  const resendConfirmationUrl =
+    process.env.NEXT_PUBLIC_RESEND_CONF ?? "/api/auth/resend-confirmation";
   const router = useRouter();
   const fetchSession = useCustomeSession((state) => state.fetchSession);
 
@@ -44,6 +48,7 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setErrorState(null);
+    setResendState("idle");
     const res = await fetch(loginUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -56,6 +61,23 @@ export default function Login() {
     } else if (res.status === 400) setErrorState("credentials");
     else if (res.status === 429) setErrorState("rateLimit");
     else if (res.status === 403) setErrorState("notConfirmed");
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email || resendState === "loading") return;
+
+    setResendState("loading");
+    try {
+      const res = await fetch(resendConfirmationUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      setResendState(res.ok ? "success" : "error");
+    } catch {
+      setResendState("error");
+    }
   };
 
   const errorMessage: Record<NonNullable<ErrorState>, string> = {
@@ -201,14 +223,42 @@ export default function Login() {
               <span className="material-symbols-outlined text-base shrink-0 mt-0.5 select-none">error</span>
               <span>{errorMessage[errorState]}</span>
               {errorState === "notConfirmed" && (
-                <a
-                  href="#"
-                  className="ml-auto shrink-0 text-xs underline hover:opacity-80"
+                <button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  disabled={resendState === "loading" || !email}
+                  className="ml-auto shrink-0 text-xs underline hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60"
                   style={{ color: C.primary }}
                 >
-                  Resend
-                </a>
+                  {resendState === "loading" ? "Sending..." : "Resend"}
+                </button>
               )}
+            </div>
+          )}
+          {resendState === "success" && (
+            <div
+              className="flex items-start gap-3 px-4 py-3 rounded-lg text-sm"
+              style={{
+                backgroundColor: `${C.primary}15`,
+                border: `1px solid ${C.primary}40`,
+                color: C.primary,
+              }}
+            >
+              <span className="material-symbols-outlined text-base shrink-0 mt-0.5 select-none">mark_email_read</span>
+              <span>Verification email sent. Check your inbox and spam folder.</span>
+            </div>
+          )}
+          {resendState === "error" && (
+            <div
+              className="flex items-start gap-3 px-4 py-3 rounded-lg text-sm"
+              style={{
+                backgroundColor: `${C.error}15`,
+                border: `1px solid ${C.error}40`,
+                color: C.error,
+              }}
+            >
+              <span className="material-symbols-outlined text-base shrink-0 mt-0.5 select-none">error</span>
+              <span>Could not resend the email. Please try again.</span>
             </div>
           )}
 
@@ -230,7 +280,10 @@ export default function Login() {
                   type="email"
                   placeholder="name@company.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setResendState("idle");
+                  }}
                   onFocus={() => setEmailFocused(true)}
                   onBlur={() => setEmailFocused(false)}
                   required

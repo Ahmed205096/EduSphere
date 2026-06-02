@@ -42,9 +42,10 @@ export const POST = async (req: NextRequest) => {
       email,
       htmlCode(
         url,
-        " You have successfully signed up for <strong>LMS</strong> . You can verify your email by clicking the button below, 🚨 This link is valid for <strong>5 minutes only</strong>.",
+        " You have successfully signed up for <strong>EduSphere</strong>. You can verify your email by clicking the button below, 🚨 This link is valid for <strong>5 minutes only</strong>.",
         " Verify Email",
       ),
+      "Verify Your EduSphere Email",
     );
 
     await User.create({

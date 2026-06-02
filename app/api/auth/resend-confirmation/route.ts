@@ -23,9 +23,10 @@ export const POST = async (req: NextRequest) => {
       email,
       htmlCode(
         url,
-        " This is a new confirmation email for <strong>LMS</strong> . You can verify your email by clicking the button below, 🚨 This link is valid for <strong>5 minutes only</strong>.",
+        " This is a new confirmation email for <strong>EduSphere</strong>. You can verify your email by clicking the button below, 🚨 This link is valid for <strong>5 minutes only</strong>.",
         " Verify Email",
       ),
+      "Verify Your EduSphere Email",
     );
     return NextResponse.json("Confirmation email sent successfully", {
       status: 200,

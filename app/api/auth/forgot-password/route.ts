@@ -12,20 +12,24 @@ interface IUser {
   resetPasswordTokenExpire: Date | null;
 }
 
-export const sendEmail = (email: string, html: string) => {
+export const sendEmail = (
+  email: string,
+  html: string,
+  subject = "EduSphere Notification",
+) => {
   const resend = new Resend(process.env.RESEND_KEY as string);
 
   return resend.emails.send({
-    from: "LMS <onboarding@resend.dev>",
+    from: process.env.RESEND_FROM_EMAIL ?? "EduSphere <onboarding@resend.dev>",
     to: email,
-    subject: "🔐 Reset Your Password - LMS",
+    subject,
     html,
   });
 };
 export const htmlCode = (url: string, bodyText: string, btnText: string) => `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0b0b0f; padding: 40px 20px; text-align: center; color: #f4f4f5;">
       <div style="max-width: 480px; margin: 0 auto; background-color: #121214; padding: 32px; border-radius: 12px; border: 1px solid #27272a; text-align: left;">
-        <h2 style="font-size: 24px; font-weight: 700; color: #a855f7; margin-top: 0; margin-bottom: 24px; text-align: center;">LMS</h2>
+        <h2 style="font-size: 24px; font-weight: 700; color: #a855f7; margin-top: 0; margin-bottom: 24px; text-align: center;">EduSphere</h2>
         <p style="font-size: 16px; color: #e4e4e7;">Hi there,</p>
         <p style="font-size: 14px; color: #a1a1aa; margin-bottom: 24px;">${bodyText}</p>
         <div style="text-align: center; margin-bottom: 28px;">
@@ -68,9 +72,10 @@ export const POST = async (req: NextRequest) => {
       email,
       htmlCode(
         url,
-        "  We received a request to reset the password for your <strong>LMS</strong> account. You can reset it by clicking the button below, 🚨 This link is valid for <strong>15 minutes only</strong>. If you did not request this change, you can safely ignore this email.",
+        "  We received a request to reset the password for your <strong>EduSphere</strong> account. You can reset it by clicking the button below, 🚨 This link is valid for <strong>15 minutes only</strong>. If you did not request this change, you can safely ignore this email.",
         " Reset Password",
       ),
+      "Reset Your EduSphere Password",
     );
 
     return NextResponse.json("Password reset link sent successfully.", {

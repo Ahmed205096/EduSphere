@@ -42,23 +42,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  icons: {
-    icon: [
-      {
-        url: "/logo.png",
-        type: "image/png",
-        sizes: "512x512",
-      },
-    ],
-    shortcut: "/logo.png",
-    apple: [
-      {
-        url: "/logo.png",
-        type: "image/png",
-        sizes: "512x512",
-      },
-    ],
-  },
   openGraph: {
     type: "website",
     siteName: "EduSphere",

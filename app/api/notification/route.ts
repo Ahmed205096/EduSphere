@@ -37,7 +37,7 @@ export const POST = async (req: NextRequest) => {
     }
 
     const html = htmlCode(link, message, "Show notification");
-    await sendEmail(recipientUser.email, html);
+    await sendEmail(recipientUser.email, html, "New EduSphere Notification");
 
     return NextResponse.json(notification, { status: 201 });
   } catch (err) {

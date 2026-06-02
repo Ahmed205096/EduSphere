@@ -4,6 +4,8 @@ EduSphere is a full learning-management platform built with Next.js, MongoDB, Cl
 
 This is not a toy course page. It is a complete product-shaped LMS: authentication, email confirmation, instructor course creation, curriculum management, video lessons, quizzes, student progress, enrollment tracking, notifications, search, dashboards, and media uploads are all wired together into one coherent app.
 
+Live Demo: [https://edusphere.ahmed-khattab.online/]
+
 ## Why This Project Is Seriously Strong
 
 EduSphere solves the hard parts people usually postpone:

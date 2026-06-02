@@ -17,13 +17,24 @@ export const sendEmail = (
   html: string,
   subject = "EduSphere Notification",
 ) => {
-  const resend = new Resend(process.env.RESEND_KEY as string);
+  if (!process.env.RESEND_KEY) {
+    throw new Error("RESEND_KEY is not configured.");
+  }
+
+  const resend = new Resend(process.env.RESEND_KEY);
 
   return resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL ?? "EduSphere <onboarding@resend.dev>",
     to: email,
     subject,
     html,
+  }).then((response) => {
+    if (response.error) {
+      console.error("Resend email failed:", response.error);
+      throw new Error(response.error.message);
+    }
+
+    return response.data;
   });
 };
 export const htmlCode = (url: string, bodyText: string, btnText: string) => `

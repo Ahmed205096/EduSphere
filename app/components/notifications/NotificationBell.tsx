@@ -97,7 +97,7 @@ export default function NotificationBell() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-10 z-50 flex h-96 w-80 flex-col overflow-hidden rounded-xl border border-white/10 bg-surface-container-low shadow-xl">
+          <div className="fixed inset-x-3 top-16 z-50 flex max-h-[calc(100dvh-5rem)] flex-col overflow-hidden rounded-xl border border-white/10 bg-surface-container-low shadow-xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-10 sm:h-96 sm:w-80 sm:max-h-none">
             <div className="shrink-0 border-b border-white/10 px-4 py-3">
               <p className="text-sm font-semibold text-on-surface">Notifications</p>
               <p className="text-[11px] text-on-surface-variant">
@@ -123,7 +123,7 @@ export default function NotificationBell() {
                       }`}
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="line-clamp-2 text-sm text-on-surface">
+                      <span className="line-clamp-2 break-words text-sm text-on-surface">
                         {notification.message}
                       </span>
                       <span className="mt-1 block text-[11px] text-on-surface-variant">

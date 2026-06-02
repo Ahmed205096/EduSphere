@@ -64,6 +64,24 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+button,
+[role="button"],
+a[href],
+summary,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+select {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"],
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
+
 .glass-card {
   background: rgba(24, 24, 27, 0.7);
   backdrop-filter: blur(12px);
